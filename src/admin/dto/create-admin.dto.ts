@@ -1,18 +1,18 @@
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { Role } from '../entities/admin.entity';
+
 export class CreateAdminDto {
-  id: number;
-  username: string;
-  password: string;
-  role: string;
-  image: string;
-  ID_card: string;
-  first_name: string;
-  last_Name: string;
-  sex: string;
-  email: string;
-  phone_number: string;
-  position: string;
-  birthday: Date;
-  address: string;
-  nationality: string;
-  ethnicity: string;
+  @IsNotEmpty()
+  @IsString()
+  readonly username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly password: string;
+
+  @IsNotEmpty()
+  readonly employeeId: string;
+
+  @IsNotEmpty()
+  readonly role: Role;
 }

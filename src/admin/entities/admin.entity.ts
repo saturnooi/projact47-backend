@@ -1,58 +1,36 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Employee } from 'src/employee/entities/employee.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+
+export enum Role {
+  Admin = 'admin',
+  SuperAdmin = 'superadmin',
+}
 
 @Entity()
 export class Admin {
-  // @PrimaryGeneratedColumn()
-  // id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  // @Column()
-  // username: string;
+  @Column({ unique: true })
+  username: string;
 
-  // @Column()
-  // password: string;
+  @Column()
+  password: string;
 
-  // @Column()
-  // role: string;
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.Admin,
+  })
+  role: Role;
 
-  // @Column()
-  // image: string;
-
-  // @Column()
-  // ID_card: string;
-
-  // @Column()
-  // first_name: string;
-
-  // @Column()
-  // last_Name: string;
-
-  // @Column()
-  // sex: string;
-
-  // @Column()
-  // email: string;
-
-  // @Column()
-  // phone_number: string;
-
-  // @Column()
-  // position: string;
-
-  // @Column()
-  // birthday: Date;
-
-  // @Column()
-  // address: string;
-
-  // @Column()
-  // nationality: string;
-
-  // @Column()
-  // ethnicity: string;
-
-  // @Column()
-  // create_at: Date;
-
-  // @Column()
-  // update_at: Date;
+  @OneToOne(() => Employee, (employee) => employee.admin)
+  @JoinColumn()
+  employee: Employee;
 }

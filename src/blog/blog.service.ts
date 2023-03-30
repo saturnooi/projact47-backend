@@ -1,26 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Blog } from './entities/blog.entity';
+import * as cheerio from 'cheerio';
 @Injectable()
 export class BlogService {
-  create(createBlogDto: CreateBlogDto) {
-    return 'This action adds a new blog';
+  constructor(
+    @InjectRepository(Blog)
+    private readonly blogRepository: Repository<Blog>,
+  ) {}
+
+  private getTextContent(html: string): string {
+    const p = document.createElement('p');
+    p.innerHTML = html;
+    return p.textContent || p.innerText || '';
   }
 
-  findAll() {
-    return `This action returns all blog`;
+  create(createBlogDto: CreateBlogDto) {
+    return this.blogRepository.save(createBlogDto);
+  }
+
+  async findAll() {
+    const blog = await this.blogRepository.find();
+    blog.map((blog) => {
+      const c = cheerio.load(blog.content);
+      blog.content = c('p').text();
+      return blog;
+    });
+    return blog;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} blog`;
+    return this.blogRepository.findOneBy({ id: id });
   }
 
   update(id: number, updateBlogDto: UpdateBlogDto) {
-    return `This action updates a #${id} blog`;
+    return this.blogRepository.update(id, updateBlogDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} blog`;
+    this.blogRepository.delete(id);
   }
 }
