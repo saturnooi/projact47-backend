@@ -1,10 +1,9 @@
 
 export class CreateDentistDto {
-
   username: string;
   password: string;
   email: string;
-  cardId: string;
+  card_id: string;
   prefix: string;
   first_name: string;
   last_name: string;
