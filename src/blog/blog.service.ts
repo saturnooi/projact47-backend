@@ -12,11 +12,6 @@ export class BlogService {
     private readonly blogRepository: Repository<Blog>,
   ) {}
 
-  private getTextContent(html: string): string {
-    const p = document.createElement('p');
-    p.innerHTML = html;
-    return p.textContent || p.innerText || '';
-  }
 
   create(createBlogDto: CreateBlogDto) {
     return this.blogRepository.save(createBlogDto);

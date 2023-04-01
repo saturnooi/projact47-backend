@@ -16,6 +16,12 @@ import { Employee } from './employee/entities/employee.entity';
 import { AdminModule } from './admin/admin.module';
 import { Blog } from './blog/entities/blog.entity';
 import { ManageToolsModule } from './manage_tools/manage_tools.module';
+import { DeviceManagementHistoryModule } from './device-management-history/device-management-history.module';
+import { ManageTool } from './manage_tools/entities/manage_tool.entity';
+import { DeviceManagementHistory } from './device-management-history/entities/device-management-history.entity';
+import { DentistModule } from './dentist/dentist.module';
+import { DentistsEducationModule } from './dentists-education/dentists-education.module';
+
 
 @Module({
   imports: [
@@ -34,7 +40,7 @@ import { ManageToolsModule } from './manage_tools/manage_tools.module';
           rejectUnauthorized: false,
         },
       },
-      entities: [Employee, Admin, Blog],
+      entities: [Employee, Admin, Blog, ManageTool, DeviceManagementHistory],
       synchronize: true,
     }),
     UsersModule,
@@ -44,6 +50,10 @@ import { ManageToolsModule } from './manage_tools/manage_tools.module';
     AuthModule,
     AdminModule,
     ManageToolsModule,
+    DeviceManagementHistoryModule,
+    DentistModule,
+    DentistsEducationModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
