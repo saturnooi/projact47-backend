@@ -1,32 +1,23 @@
-# Use an official Node.js runtime as a parent image
-FROM node:14 as builder
+# Use the official Node.js runtime as a parent image
+FROM node:14-alpine
 
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install the dependencies
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application files
+# Copy the rest of the application files to the working directory
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Use an official Nginx runtime as a parent image
-FROM nginx
+# Expose the port that the application will listen on
+EXPOSE 3000
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy the built NestJS application from the previous build stage
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD [ "npm", "run", "start:prod" ]
