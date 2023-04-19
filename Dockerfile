@@ -1,32 +1,10 @@
-# Base image
-FROM node:14
-
-# Set working directory
-WORKDIR /app
-
-# Copy package.json and package-lock.json
+FROM node:14-alpine AS build
+WORKDIR /usr/src/app
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
-
-# Copy source files
 COPY . .
-
-# Build the app
 RUN npm run build
 
-# Nginx image
-FROM nginx:latest
-
-# Copy Nginx configuration file
+FROM nginx:alpine
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
-
-# Copy build files from NestJS app
-COPY --from=0 /app/dist /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
