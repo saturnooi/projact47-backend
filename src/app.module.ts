@@ -21,7 +21,13 @@ import { ManageTool } from './manage_tools/entities/manage_tool.entity';
 import { DeviceManagementHistory } from './device-management-history/entities/device-management-history.entity';
 import { DentistModule } from './dentist/dentist.module';
 import { DentistsEducationModule } from './dentists-education/dentists-education.module';
-
+import { PatientModule } from './patient/patient.module';
+import { DentistWorkModule } from './dentist-work/dentist-work.module';
+import { Dentist } from './dentist/entities/dentist.entity';
+import { DentistWork } from './dentist-work/entities/dentist-work.entity';
+import { DentistsEducation } from './dentists-education/entities/dentists-education.entity';
+import { User } from './users/entities/user.entity';
+import { Patient } from './patient/entities/patient.entity';
 
 @Module({
   imports: [
@@ -40,7 +46,18 @@ import { DentistsEducationModule } from './dentists-education/dentists-education
           rejectUnauthorized: false,
         },
       },
-      entities: [Employee, Admin, Blog, ManageTool, DeviceManagementHistory],
+      entities: [
+        Employee,
+        Admin,
+        Blog,
+        ManageTool,
+        DeviceManagementHistory,
+        Dentist,
+        DentistWork,
+        DentistsEducation,
+        User,
+        Patient,
+      ],
       synchronize: true,
     }),
     UsersModule,
@@ -53,7 +70,8 @@ import { DentistsEducationModule } from './dentists-education/dentists-education
     DeviceManagementHistoryModule,
     DentistModule,
     DentistsEducationModule,
-
+    PatientModule,
+    DentistWorkModule,
   ],
   controllers: [AppController],
   providers: [AppService],

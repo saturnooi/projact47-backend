@@ -1,26 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDentistsEducationDto } from './dto/create-dentists-education.dto';
 import { UpdateDentistsEducationDto } from './dto/update-dentists-education.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DentistsEducation } from './entities/dentists-education.entity';
 
 @Injectable()
 export class DentistsEducationService {
+  constructor(
+    @InjectRepository(DentistsEducation)
+    private dentistsEducationRepository: Repository<DentistsEducation>,
+  ) {}
+
   create(createDentistsEducationDto: CreateDentistsEducationDto) {
-    return 'This action adds a new dentistsEducation';
+    return this.dentistsEducationRepository.save(createDentistsEducationDto);
   }
 
   findAll() {
-    return `This action returns all dentistsEducation`;
+    return this.dentistsEducationRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} dentistsEducation`;
+    return this.dentistsEducationRepository.findOneBy({ id: id });
   }
 
   update(id: number, updateDentistsEducationDto: UpdateDentistsEducationDto) {
-    return `This action updates a #${id} dentistsEducation`;
+    return this.dentistsEducationRepository.update(
+      id,
+      updateDentistsEducationDto,
+    );
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    await this.dentistsEducationRepository.delete(id);
     return `This action removes a #${id} dentistsEducation`;
   }
 }

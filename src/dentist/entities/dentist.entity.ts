@@ -1,3 +1,4 @@
+import { DentistWork } from 'src/dentist-work/entities/dentist-work.entity';
 import { DentistsEducation } from 'src/dentists-education/entities/dentists-education.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
@@ -36,4 +37,8 @@ export class Dentist {
 
   @OneToMany(() => DentistsEducation, (education) => education.dentist)
   dentistsEducation: DentistsEducation[];
+
+  @OneToMany(() => DentistWork, work => work.dentist)
+  works: DentistWork[];
+
 }
