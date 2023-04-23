@@ -61,6 +61,30 @@ export class DentistService {
     };
   }
 
+  async findByUsername(username: string) {
+    const dentist = await this.dentistRepository.findOne({
+      where: {
+        username,
+      },
+      relations: ['dentistsEducation'],
+    });
+    dentist.card_id = await this.encryptionService.decrypt(dentist.card_id);
+    dentist.password = null;
+
+    if (!dentist) {
+      return {
+        statusCode: 404,
+        message: `Username  not found`,
+        data: null,
+      };
+    }
+    return {
+      statusCode: 200,
+      message: `Username retrieved successfully`,
+      data: dentist,
+    };
+  }
+
   async findOne(id: number) {
     const dentist = await this.dentistRepository.findOne({
       where: {

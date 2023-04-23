@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateQueueDto } from './dto/create-queue.dto';
 import { UpdateQueueDto } from './dto/update-queue.dto';
+import { Queue } from './entities/queue.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class QueueService {
+  constructor(
+    @InjectRepository(Queue)
+    private readonly queueRepository: Repository<Queue>,
+  ) {}
   create(createQueueDto: CreateQueueDto) {
-    return 'This action adds a new queue';
+    return this.queueRepository.save(createQueueDto);
   }
 
   findAll() {

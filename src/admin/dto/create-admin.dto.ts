@@ -11,7 +11,7 @@ export class CreateAdminDto {
   readonly password: string;
 
   @IsNotEmpty()
-  readonly employeeId: string;
+  readonly employeeId: number;
 
   @IsNotEmpty()
   readonly role: Role;

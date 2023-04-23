@@ -28,6 +28,13 @@ import { DentistWork } from './dentist-work/entities/dentist-work.entity';
 import { DentistsEducation } from './dentists-education/entities/dentists-education.entity';
 import { User } from './users/entities/user.entity';
 import { Patient } from './patient/entities/patient.entity';
+import { LocalAdminStrategy } from './auth/local-admin.strategy';
+import { LocalDentistStrategy } from './auth/local-dentist.strategy';
+import { RolesGuard } from './auth/role.guard';
+import { Reflector } from '@nestjs/core';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { jwtConstants } from './auth/constants';
+import { Queue } from './queue/entities/queue.entity';
 
 @Module({
   imports: [
@@ -57,6 +64,7 @@ import { Patient } from './patient/entities/patient.entity';
         DentistsEducation,
         User,
         Patient,
+        Queue,
       ],
       synchronize: true,
     }),

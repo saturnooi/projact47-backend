@@ -5,11 +5,12 @@ import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from './entities/admin.entity';
 import { Repository } from 'typeorm';
-import { Employee } from 'src/employee/entities/employee.entity';
+import { EncryptionService } from 'src/encryption/encryption.service';
 
 @Injectable()
 export class AdminService {
   constructor(
+    private readonly encryptionService: EncryptionService,
     @InjectRepository(Admin)
     private adminRepository: Repository<Admin>,
   ) {}
@@ -28,11 +29,7 @@ export class AdminService {
       });
       const savedAdmin = await this.adminRepository.save(admin);
       savedAdmin.password = null;
-      return {
-        statusCode: 201,
-        message: 'Username created successfully',
-        data: savedAdmin,
-      };
+      return savedAdmin;
     } catch (err) {
       throw new Error(`Could not create Username : ${err.message}`);
     }
@@ -47,11 +44,7 @@ export class AdminService {
         admin.password = null;
         return admin;
       });
-      return {
-        statusCode: 200,
-        message: 'Retrieved successfully',
-        data: admins,
-      };
+      return admins;
     } catch (err) {
       throw new Error(`Could not get employees: ${err.message}`);
     }
@@ -68,49 +61,52 @@ export class AdminService {
 
       admin.password = null;
       if (!admin) {
-        return {
-          statusCode: 404,
-          message: `Username with id ${id} not found`,
-          data: null,
-        };
+        throw new Error(
+          `Could not get employees: ${`Username with id ${id} not found`}`,
+        );
       }
-
-      return {
-        statusCode: 200,
-        message: `Username with id ${id} retrieved successfully`,
-        data: admin,
-      };
+      return admin;
     } catch (err) {
       throw new Error(`Could not get username with id ${id}: ${err.message}`);
     }
   }
-
   async findOneByUsername(username: string) {
     try {
       const admin = await this.adminRepository.findOne({
         where: {
-          username: username,
+          username,
         },
         relations: ['employee'],
       });
 
       if (!admin) {
-        return {
-          statusCode: 404,
-          message: `Username with id ${username} not found`,
-          data: null,
-        };
+        throw new Error(`Could not get employees: ${`Username  not found`}`);
       }
-
-      return {
-        statusCode: 200,
-        message: `Username with id ${username} retrieved successfully`,
-        data: admin,
-      };
+      return admin;
     } catch (err) {
-      throw new Error(
-        `Could not get username with id ${username}: ${err.message}`,
+      throw new Error(`Could not get username : ${err.message}`);
+    }
+  }
+
+  async Profile(username: string) {
+    try {
+      const admin = await this.adminRepository.findOne({
+        where: {
+          username,
+        },
+        relations: ['employee'],
+      });
+
+      admin.password = null;
+      admin.employee.card_id = await this.encryptionService.decrypt(
+        admin.employee.card_id,
       );
+      if (!admin) {
+        throw new Error(`Could not get employees: ${`Username  not found`}`);
+      }
+      return admin;
+    } catch (err) {
+      throw new Error(`Could not get username : ${err.message}`);
     }
   }
 

@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AdminService } from 'src/admin/admin.service';
-import { Admin } from 'src/admin/entities/admin.entity';
+import { Admin, Role } from 'src/admin/entities/admin.entity';
 import * as bcrypt from 'bcrypt';
+import { Dentist } from 'src/dentist/entities/dentist.entity';
+import { DentistService } from 'src/dentist/dentist.service';
+import { Login } from 'src/models/login';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly dentistService: DentistService,
     private readonly adminService: AdminService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateAdmin(payload: any) {
-    const { username, sub: id, role, password } = payload;
-    const admin = await (
-      await this.adminService.findOneByUsername(payload.username)
-    ).data;
+  async validateAdmin(username: string, password: string) {
+    const admin = await await this.adminService.findOneByUsername(username);
     const comparePassword = await bcrypt.compare(password, admin.password);
     if (admin && comparePassword) {
       return admin;
@@ -23,7 +24,17 @@ export class AuthService {
 
     return null;
   }
-
+  async validateDentist(username: string, password: string) {
+    const dentist = (await this.dentistService.findByUsername(username)).data;
+    if (!dentist) {
+      return null;
+    }
+    const isPasswordValid = await bcrypt.compare(password, dentist.password);
+    if (!isPasswordValid) {
+      return null;
+    }
+    return { id: dentist.id, username: dentist.username, role: 'dentist' };
+  }
   //   async validateUser(payload: any): Promise<User> {
   //     const { username, sub: id } = payload;
   //     const user = await this.userService.findOneByUsername(username);
@@ -35,20 +46,31 @@ export class AuthService {
   //     return null;
   //   }
 
-  async loginAdmin(admin: Admin) {
+  async loginAdmin(admin: Login) {
     const payload = {
-      sub: admin.id,
       username: admin.username,
-      role: admin.role,
+      password: admin.password,
+      Role: (await this.validateAdmin(admin.username, admin.password)).role,
     };
 
     return {
-      _token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload),
     };
   }
 
-  //   async loginUser(user: User): Promise<string> {
-  //     const payload = { username: user.username, sub: user.id };
-  //     return this.jwtService.sign(payload);
-  //   }
+  async loginDentist(dentist: Login) {
+    const payload = {
+      username: dentist.username,
+      password: dentist.password,
+      Role: 'dentist',
+    };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
 }
+
+
+
+
+

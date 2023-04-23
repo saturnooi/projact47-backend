@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -13,8 +22,24 @@ export class BlogController {
   }
 
   @Get()
-  findAll() {
-    return this.blogService.findAll();
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') searchQuery?: string,
+  ): Promise<{
+    data: CreateBlogDto[];
+    currentPage: number;
+    perPage: number;
+    total: number;
+    lastPage: number;
+  }> {
+    const blogs = await this.blogService.findAll(
+      Number(page),
+      Number(limit),
+      searchQuery,
+    );
+
+    return blogs;
   }
 
   @Get(':id')
