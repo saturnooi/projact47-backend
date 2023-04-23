@@ -1,8 +1,20 @@
+import { IsNotEmpty, IsDateString } from 'class-validator';
+
 export class CreateQueueDto {
-  patientId?: number;
-  employeeId: number;
-  time_start: Date;
-  time_end: Date;
-  symtom: string;
+  @IsNotEmpty()
+  patientId: number;
+
+  @IsNotEmpty()
+  @IsDateString()
+  timeStart: Date;
+
+  @IsNotEmpty()
+  @IsDateString()
+  timeEnd: Date;
+
+  @IsNotEmpty()
+  symptom: string;
+
+  @IsNotEmpty()
   status: string;
 }

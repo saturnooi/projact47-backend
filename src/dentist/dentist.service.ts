@@ -138,6 +138,14 @@ export class DentistService {
     }
   }
 
+  async getSimpleDentists(): Promise<{ id: number; name: string }[]> {
+    const dentists = await this.dentistRepository.find();
+    return dentists.map(({ id, prefix, first_name, last_name }) => ({
+      id,
+      name: `${prefix} ${first_name} ${last_name}`,
+    }));
+  }
+
   update(id: number, updateDentistDto: UpdateDentistDto) {
     return this.dentistRepository.update(id, updateDentistDto);
   }

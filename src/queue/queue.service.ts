@@ -16,18 +16,29 @@ export class QueueService {
   }
 
   findAll() {
-    return `This action returns all queue`;
+    return this.queueRepository.find({ relations: ['patient', 'dentist'] });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} queue`;
+    return this.queueRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['patient', 'dentist'],
+    });
   }
 
-  update(id: number, updateQueueDto: UpdateQueueDto) {
-    return `This action updates a #${id} queue`;
+  async update(id: number, updateQueueDto: UpdateQueueDto) {
+    await this.queueRepository.update(id, updateQueueDto);
+    return this.queueRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['patient', 'dentist'],
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} queue`;
+    this.queueRepository.delete(id);
   }
 }

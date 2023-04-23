@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
 import { IsString, IsOptional, IsDateString } from 'class-validator';
 
 import { User } from 'src/users/entities/user.entity';
+import { Queue } from 'src/queue/entities/queue.entity';
 
 @Entity()
 export class Patient {
@@ -53,4 +54,8 @@ export class Patient {
 
   @OneToOne(() => User, (users) => users.patient)
   user: User;
+
+  @OneToMany(() => Queue, queue => queue.patient)
+  queues: Queue[];
+
 }

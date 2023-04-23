@@ -17,6 +17,7 @@ export class AdminService {
 
   private async getHashed(cardId: string): Promise<string> {
     const salt = await bcrypt.genSalt();
+    console.log(salt);
     return await bcrypt.hash(cardId, salt);
   }
 
