@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import { CreateQueueDto } from './dto/create-queue.dto';
 import { UpdateQueueDto } from './dto/update-queue.dto';
@@ -11,11 +11,19 @@ export class QueueController {
   create(@Body() createQueueDto: CreateQueueDto) {
     return this.queueService.create(createQueueDto);
   }
+  
+  @Get('bydate')
+  async findQueuesByDate(@Query('date') date: string) {
+    const queues = await this.queueService.findQueuesByDate(new Date(date));
+    return queues;
+  }
 
   @Get()
   findAll() {
     return this.queueService.findAll();
   }
+
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -31,4 +39,7 @@ export class QueueController {
   remove(@Param('id') id: string) {
     return this.queueService.remove(+id);
   }
+
+
+  
 }

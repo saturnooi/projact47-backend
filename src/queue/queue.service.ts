@@ -41,4 +41,21 @@ export class QueueService {
   remove(id: number) {
     this.queueRepository.delete(id);
   }
-}
+
+  async findQueuesByDate(date: Date): Promise<Queue[]> {
+    const queues = await this.queueRepository
+      .createQueryBuilder('queue')
+      .leftJoinAndSelect('queue.patient', 'patient')
+      .leftJoinAndSelect('queue.dentist', 'dentist')
+      .where('queue.time_start >= :start', { start: date })
+      .andWhere('queue.time_start < :end', {
+        end: new Date(date.getTime() + 86400000),
+      })
+      .getMany();
+
+    return queues;
+  }
+  }
+
+  
+
