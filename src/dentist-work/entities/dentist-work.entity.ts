@@ -15,9 +15,6 @@ export class DentistWork {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  @IsNotEmpty()
-  dentistId: number;
 
   @ManyToOne(() => Dentist, (dentist) => dentist.works)
   @JoinColumn({ name: 'dentistId' })
@@ -25,17 +22,13 @@ export class DentistWork {
 
   @Column()
 
-  startTime: Date;
+  time_start: Date;
 
   @Column()
 
-  endTime: Date;
+  time_end: Date;
 
-  @Column()
-  dayOfWeek: number;
-
-  @Column()
-  repetition: string;
-    
+  @Column({ default: 'null' })
+  repeatType: string;
 
 }

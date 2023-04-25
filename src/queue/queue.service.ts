@@ -172,8 +172,26 @@ export class QueueService {
   }
 
   async getAwaitingConfirmationCount(): Promise<number> {
-    const count = await this.queueRepository.count({ where: { status: 'รอการยืนยันจากคลินิก' } });
+    const count = await this.queueRepository.count({
+      where: { status: 'รอการยืนยันจากคลินิก' },
+    });
     return count;
   }
-  
+
+  async findByMonthAndYear(month: number, year: number) {
+    const startOfMonth = new Date(`${year}-${month}-01`);
+    const endOfMonth = new Date(
+      new Date(startOfMonth).setMonth(startOfMonth.getMonth() + 1),
+    );
+
+    const appointments = await this.queueRepository
+      .createQueryBuilder('queue')
+      .leftJoinAndSelect('queue.patient', 'patient')
+      .leftJoinAndSelect('queue.dentist', 'dentist')
+      .where('queue.time_start >= :startOfMonth', { startOfMonth })
+      .andWhere('queue.time_end < :endOfMonth', { endOfMonth })
+      .getMany();
+
+    return appointments;
+  }
 }

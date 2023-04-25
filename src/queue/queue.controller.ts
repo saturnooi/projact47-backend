@@ -60,7 +60,17 @@ export class QueueController {
 
     return results;
   }
-
+  @Get('byMonth')
+  async findByMonthAndYear(
+    @Query('month') month: number,
+    @Query('year') year: number,
+  ) {
+    const appointments = await this.queueService.findByMonthAndYear(
+      month,
+      year,
+    );
+    return appointments;
+  }
   @Get('awaitingclinicalconfirmation')
   async findAllAwaitingClinicalConfirmation(
     @Query('page') page = 1,
@@ -83,9 +93,9 @@ export class QueueController {
 
   @Get('awaiting-confirmation-count')
   async getAwaitingConfirmationCount(): Promise<number> {
-    return this.queueService.getAwaitingConfirmationCount()
+    return this.queueService.getAwaitingConfirmationCount();
   }
-  
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.queueService.findOne(+id);
@@ -101,5 +111,5 @@ export class QueueController {
     return this.queueService.remove(+id);
   }
 
-
+  
 }

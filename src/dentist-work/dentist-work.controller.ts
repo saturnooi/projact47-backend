@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { DentistWorkService } from './dentist-work.service';
 import { CreateDentistWorkDto } from './dto/create-dentist-work.dto';
@@ -24,7 +25,17 @@ export class DentistWorkController {
   findAll() {
     return this.dentistWorkService.findAll();
   }
-
+  @Get('byMonth')
+  async findByMonthAndYear(
+    @Query('month') month: number,
+    @Query('year') year: number,
+  ) {
+    const appointments = await this.dentistWorkService.findByMonthAndYear(
+      month,
+      year,
+    );
+    return appointments;
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.dentistWorkService.findOne(+id);
@@ -42,11 +53,11 @@ export class DentistWorkController {
   remove(@Param('id') id: string) {
     return this.dentistWorkService.remove(+id);
   }
-  @Get('/monthly-schedule/:month/:year')
-  async getMonthlySchedule(
-    @Param('month') month: number,
-    @Param('year') year: number,
-  ) {
-    return this.dentistWorkService.getMonthlySchedule(year, month);
-  }
+  // @Get('/monthly-schedule/:month/:year')
+  // async getMonthlySchedule(
+  //   @Param('month') month: number,
+  //   @Param('year') year: number,
+  // ) {
+  //   return this.dentistWorkService.getMonthlySchedule(year, month);
+  // }
 }

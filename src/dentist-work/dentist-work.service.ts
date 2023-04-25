@@ -15,57 +15,79 @@ export class DentistWorkService {
     private dentistWorkRepository: Repository<DentistWork>,
   ) {}
 
+  private async createSingleSchedule(
+    createDentistWorkDto: CreateDentistWorkDto,
+  ) {
+    return this.dentistWorkRepository.save(createDentistWorkDto);
+  }
+
   async create(createDentistWorkDto: CreateDentistWorkDto) {
-    if (createDentistWorkDto.repetition === 'day') {
-      return [await this.dentistWorkRepository.save(createDentistWorkDto)];
-    } else if (createDentistWorkDto.repetition === 'week') {
-      const daysInWeek = 7;
-      const startDate = new Date(createDentistWorkDto.startTime);
-      const endDate = new Date(createDentistWorkDto.endTime);
-      const workingDays: DentistWork[] = [];
-      for (let i = 0; i < daysInWeek; i++) {
-        const dayOfWeek = (startDate.getDay() + i) % daysInWeek;
-        const startTime = new Date(startDate);
-        const endTime = new Date(endDate);
-        startTime.setDate(startDate.getDate() + i);
-        endTime.setDate(endDate.getDate() + i);
-        const newWorkingDay = {
-          ...createDentistWorkDto,
-          dayOfWeek,
-          startTime,
-          endTime,
-        };
-        workingDays.push(await this.dentistWorkRepository.save(newWorkingDay));
-      }
-      return workingDays;
-    } else if (createDentistWorkDto.repetition === 'month') {
-      const daysInMonth = new Date(
-        createDentistWorkDto.startTime.getFullYear(),
-        createDentistWorkDto.startTime.getMonth() + 1,
-        0,
-      ).getDate();
-      const startDate = new Date(createDentistWorkDto.startTime);
-      const endDate = new Date(createDentistWorkDto.endTime);
-      const workingDays: DentistWork[] = [];
-      for (let i = 0; i < daysInMonth; i++) {
-        const dayOfWeek = (startDate.getDay() + i) % 7;
-        const startTime = new Date(startDate);
-        const endTime = new Date(endDate);
-        startTime.setDate(startDate.getDate() + i);
-        endTime.setDate(endDate.getDate() + i);
-        const newWorkingDay = {
-          ...createDentistWorkDto,
-          dayOfWeek,
-          startTime,
-          endTime,
-        };
-        const playlode = await this.dentistWorkRepository.save(newWorkingDay);
-        workingDays.push();
-      }
-      return workingDays;
-    } else {
-      return [await this.dentistWorkRepository.save(createDentistWorkDto)];
+    const schedules: CreateDentistWorkDto[] = [];
+
+    switch (createDentistWorkDto.repeatType) {
+      case 'null':
+        // Create schedule for today only
+        schedules.push(await this.createSingleSchedule(createDentistWorkDto));
+        break;
+      case 'Day':
+        // Create schedule for today only
+        schedules.push(await this.createSingleSchedule(createDentistWorkDto));
+        for (let i = 1; i <= 364; i++) {
+          const nextDateStart = new Date(createDentistWorkDto.time_start);
+          nextDateStart.setDate(nextDateStart.getDate() + i);
+          const nextDateEnd = new Date(createDentistWorkDto.time_end);
+          nextDateEnd.setDate(nextDateEnd.getDate() + i);
+          schedules.push(
+            await this.createSingleSchedule({
+              dentist: createDentistWorkDto.dentist,
+              time_start: nextDateStart,
+              time_end: nextDateEnd,
+              repeatType: createDentistWorkDto.repeatType,
+            }),
+          );
+        }
+
+        break;
+      case 'Week':
+        // Create schedule for today and every next 7 days at the same time
+        schedules.push(await this.createSingleSchedule(createDentistWorkDto));
+        for (let i = 1; i <= 4; i++) {
+          const nextDateStart = new Date(createDentistWorkDto.time_start);
+          nextDateStart.setDate(nextDateStart.getDate() + i * 7);
+          const nextDateEnd = new Date(createDentistWorkDto.time_end);
+          nextDateEnd.setDate(nextDateEnd.getDate() + i * 7);
+          schedules.push(
+            await this.createSingleSchedule({
+              dentist: createDentistWorkDto.dentist,
+              time_start: nextDateStart,
+              time_end: nextDateEnd,
+              repeatType: createDentistWorkDto.repeatType,
+            }),
+          );
+        }
+        break;
+      case 'Month':
+        // Create schedule for today and every next month on the same date at the same time
+        schedules.push(await this.createSingleSchedule(createDentistWorkDto));
+        for (let i = 1; i <= 11; i++) {
+          const nextDateStart = new Date(createDentistWorkDto.time_start);
+          nextDateStart.setMonth(nextDateStart.getMonth() + i);
+
+          const nextDateEnd = new Date(createDentistWorkDto.time_start);
+          nextDateEnd.setMonth(nextDateEnd.getMonth() + i);
+          schedules.push(
+            await this.createSingleSchedule({
+              dentist: createDentistWorkDto.dentist,
+              time_start: nextDateStart,
+              time_end: nextDateEnd,
+              repeatType: createDentistWorkDto.repeatType,
+            }),
+          );
+        }
+        break;
     }
+
+    return schedules;
   }
 
   async findAll() {
@@ -85,23 +107,38 @@ export class DentistWorkService {
     return `This action removes a #${id} dentistWork`;
   }
 
-  async getMonthlySchedule(year: number, month: number): Promise<any[]> {
-    const dentists = await this.dentistRepository.find({
-      relations: ['works'],
-    });
+  async findByMonthAndYear(month: number, year: number) {
+    const startOfMonth = new Date(`${year}-${month}-01`);
+    const endOfMonth = new Date(
+      new Date(startOfMonth).setMonth(startOfMonth.getMonth() + 1),
+    );
 
-    const monthlySchedule = dentists.map((dentist) => {
-      const workingDays = dentist.works.filter((workingDay) => {
-        const workingDayYear = workingDay.startTime.getFullYear();
-        const workingDayMonth = workingDay.startTime.getMonth();
-        return workingDayYear === year && workingDayMonth === month;
-      });
-      return {
-        dentist,
-        workingDays,
-      };
-    });
-
-    return monthlySchedule;
+    const appointments = await this.dentistWorkRepository
+      .createQueryBuilder('dentistWork')
+      .leftJoinAndSelect('dentistWork.dentist', 'dentist')
+      .where('dentistWork.time_start >= :startOfMonth', { startOfMonth })
+      .andWhere('dentistWork.time_end < :endOfMonth', { endOfMonth })
+      .getMany();
+    return appointments;
   }
+
+  // async getMonthlySchedule(year: number, month: number): Promise<any[]> {
+  //   const dentists = await this.dentistRepository.find({
+  //     relations: ['works'],
+  //   });
+
+  //   const monthlySchedule = dentists.map((dentist) => {
+  //     const workingDays = dentist.works.filter((workingDay) => {
+  //       const workingDayYear = workingDay.startTime.getFullYear();
+  //       const workingDayMonth = workingDay.startTime.getMonth();
+  //       return workingDayYear === year && workingDayMonth === month;
+  //     });
+  //     return {
+  //       dentist,
+  //       workingDays,
+  //     };
+  //   });
+
+  //   return monthlySchedule;
+  // }
 }
