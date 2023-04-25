@@ -5,8 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Dentist } from './entities/dentist.entity';
 import { EncryptionService } from 'src/encryption/encryption.service';
 
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Dentist])],
+  imports: [TypeOrmModule.forFeature([Dentist]),],
   controllers: [DentistController],
   providers: [DentistService, EncryptionService],
 })

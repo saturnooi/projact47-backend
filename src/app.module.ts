@@ -35,6 +35,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { Queue } from './queue/entities/queue.entity';
+import { ClinicServicesModule } from './clinic-services/clinic-services.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { Queue } from './queue/entities/queue.entity';
     DentistsEducationModule,
     PatientModule,
     DentistWorkModule,
+    ClinicServicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
