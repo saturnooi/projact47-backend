@@ -12,6 +12,28 @@ export class QueueController {
     return this.queueService.create(createQueueDto);
   }
 
+  @Get('dentist')
+  async findByDentist(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search = '',
+    @Query('sortBy') sortBy,
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
+    @Query('sortType') sortType: 'dentist' | 'patient' | 'queue' = 'queue',
+    @Query('dentistId') dentistId: number,
+  ) {
+    const queues = await this.queueService.findByDentist(
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      sortType,
+      dentistId,
+    );
+    return queues;
+  }
+
   @Get('bydate/dentist')
   async findQueuesByDateAndDentist(
     @Query('date') date: string,
