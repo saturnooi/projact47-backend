@@ -12,10 +12,14 @@ export class HistoryAppointmentService {
     private historyAppointmentRepository: Repository<HistoryAppointment>,
   ) {}
 
-  create(createHistoryAppointmentDto: CreateHistoryAppointmentDto) {
-    return this.historyAppointmentRepository.create(
-      createHistoryAppointmentDto,
-    );
+  async create(createHistoryAppointmentDto: CreateHistoryAppointmentDto) {
+    // console.log(createHistoryAppointmentDto);
+    // const data = await this.historyAppointmentRepository.create(
+    //   createHistoryAppointmentDto,
+    // );
+    // console.log(data);
+    // return data
+    return this.historyAppointmentRepository.save(createHistoryAppointmentDto);
   }
 
   findAll() {
