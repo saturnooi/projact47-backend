@@ -38,6 +38,7 @@ import { Queue } from './queue/entities/queue.entity';
 import { ClinicServicesModule } from './clinic-services/clinic-services.module';
 import { HistoryAppointmentModule } from './history_appointment/history_appointment.module';
 import { HistoryAppointment } from './history_appointment/entities/history_appointment.entity';
+import { ClinicService } from './clinic-services/entities/clinic-service.entity';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { HistoryAppointment } from './history_appointment/entities/history_appoi
         Patient,
         Queue,
         HistoryAppointment,
+        ClinicService
       ],
       synchronize: true,
     }),
@@ -84,8 +86,8 @@ import { HistoryAppointment } from './history_appointment/entities/history_appoi
     DentistsEducationModule,
     PatientModule,
     DentistWorkModule,
-    ClinicServicesModule,
     HistoryAppointmentModule,
+    ClinicServicesModule
   ],
   controllers: [AppController],
   providers: [AppService],

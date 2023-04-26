@@ -13,7 +13,7 @@ export class ClinicServicesService {
   {}
 
   create(createClinicServiceDto: CreateClinicServiceDto) {
-    return this.clinicServicesRepository.create(createClinicServiceDto);
+    return this.clinicServicesRepository.save(createClinicServiceDto);
   }
 
   findAll() {
