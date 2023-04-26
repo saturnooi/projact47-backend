@@ -1,5 +1,6 @@
 import { DentistWork } from 'src/dentist-work/entities/dentist-work.entity';
 import { DentistsEducation } from 'src/dentists-education/entities/dentists-education.entity';
+import { HistoryAppointment } from 'src/history_appointment/entities/history_appointment.entity';
 import { Queue } from 'src/queue/entities/queue.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
@@ -44,4 +45,7 @@ export class Dentist {
 
   @OneToMany(() => Queue, (queue) => queue.dentist)
   queues: Queue[];
+
+  @OneToMany(() =>  HistoryAppointment, (historyAppointment) => historyAppointment.dentist)
+  historyAppointment: HistoryAppointment[];
 }

@@ -62,28 +62,40 @@ export class DentistService {
   }
 
   async findByUsername(username: string) {
-    const dentist = await this.dentistRepository.findOne({
-      where: {
-        username,
-      },
-      relations: ['dentistsEducation'],
-    });
-    dentist.card_id = await this.encryptionService.decrypt(dentist.card_id);
-    dentist.password = null;
+    try {
+      const dentist = await this.dentistRepository.findOne({
+        where: {
+          username,
+        },
+        relations: ['dentistsEducation'],
+      });
 
-    if (!dentist) {
-      return {
-        statusCode: 404,
-        message: `Username  not found`,
-        data: null,
-      };
+      if (!dentist) {
+        throw new Error(`Could not get employees: ${`Username  not found`}`);
+      }
+      return dentist;
+    } catch (err) {
+      throw new Error(`Could not get username : ${err.message}`);
     }
-    return {
-      statusCode: 200,
-      message: `Username retrieved successfully`,
-      data: dentist,
-    };
   }
+
+  // async findOneByUsername(username: string) {
+  //   try {
+  //     const admin = await this.adminRepository.findOne({
+  //       where: {
+  //         username,
+  //       },
+  //       relations: ['employee'],
+  //     });
+
+  //     if (!admin) {
+  //       throw new Error(`Could not get employees: ${`Username  not found`}`);
+  //     }
+  //     return admin;
+  //   } catch (err) {
+  //     throw new Error(`Could not get username : ${err.message}`);
+  //   }
+  // }
 
   async findOne(id: number) {
     const dentist = await this.dentistRepository.findOne({
@@ -153,5 +165,23 @@ export class DentistService {
   remove(id: number) {
     this.dentistRepository.delete(id);
     return `This action removes a #${id} dentist`;
+  }
+
+  async Profile(username: string) {
+    try {
+      const dentist = await this.dentistRepository.findOne({
+        where: {
+          username,
+        },
+      });
+      dentist.password = null;
+      dentist.card_id = await this.encryptionService.decrypt(dentist.card_id);
+      if (!dentist) {
+        throw new Error(`Could not get employees: ${`Username  not found`}`);
+      }
+      return dentist;
+    } catch (err) {
+      throw new Error(`Could not get username : ${err.message}`);
+    }
   }
 }

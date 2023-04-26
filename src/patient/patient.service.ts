@@ -35,4 +35,6 @@ export class PatientService {
   remove(id: number) {
     this.patientRepository.delete(id);
   }
+
+  
 }

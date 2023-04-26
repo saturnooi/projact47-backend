@@ -14,6 +14,7 @@ export class LocalDentistStrategy extends PassportStrategy(
   }
 
   async validate(username: string, password: string) {
+    console.log(username,password);
     const dentist = await this.authService.validateDentist(username, password);
     if (!dentist) {
       throw new UnauthorizedException('Invalid username or password');

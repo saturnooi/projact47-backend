@@ -12,13 +12,37 @@ export class QueueController {
     return this.queueService.create(createQueueDto);
   }
 
+  @Get('bydate/dentist')
+  async findQueuesByDateAndDentist(
+    @Query('date') date: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Query('search') search = '',
+    @Query('sortBy') sortBy,
+    @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
+    @Query('sortType') sortType: 'dentist' | 'patient' | 'queue' = 'queue',
+    @Query('dentistId') dentistId: number,
+  ) {
+    const queues = await this.queueService.findQueuesByDateAndDentist(
+      new Date(date),
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      sortType,
+      dentistId,
+    );
+    return queues;
+  }
+
   @Get('bydate')
   async findQueuesByDate(
     @Query('date') date: string,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('search') search = '',
-    @Query('sortBy') sortBy = 'id',
+    @Query('sortBy') sortBy,
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
     @Query('sortType') sortType: 'dentist' | 'patient' | 'queue' = 'queue',
   ) {
@@ -45,7 +69,7 @@ export class QueueController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('search') search = '',
-    @Query('sortBy') sortBy = 'id',
+    @Query('sortBy') sortBy,
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'ASC',
     @Query('sortType') sortType: 'dentist' | 'patient' | 'queue' = 'queue',
   ) {
@@ -110,6 +134,4 @@ export class QueueController {
   remove(@Param('id') id: string) {
     return this.queueService.remove(+id);
   }
-
-  
 }

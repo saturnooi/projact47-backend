@@ -25,7 +25,7 @@ export class AuthService {
     return null;
   }
   async validateDentist(username: string, password: string) {
-    const dentist = (await this.dentistService.findByUsername(username)).data;
+    const dentist = await this.dentistService.findByUsername(username);
     if (!dentist) {
       return null;
     }

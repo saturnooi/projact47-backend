@@ -21,7 +21,10 @@ export class DentistController {
   async getSimpleDentists() {
     return this.dentistService.getSimpleDentists();
   }
-
+  @Get('profile/:username')
+  profile(@Param('username') username: string) {
+    return this.dentistService.Profile(username);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.dentistService.findOne(+id);

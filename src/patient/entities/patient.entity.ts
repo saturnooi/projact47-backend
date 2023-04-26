@@ -3,6 +3,7 @@ import { IsString, IsOptional, IsDateString } from 'class-validator';
 
 import { User } from 'src/users/entities/user.entity';
 import { Queue } from 'src/queue/entities/queue.entity';
+import { HistoryAppointment } from 'src/history_appointment/entities/history_appointment.entity';
 
 @Entity()
 export class Patient {
@@ -58,4 +59,6 @@ export class Patient {
   @OneToMany(() => Queue, queue => queue.patient)
   queues: Queue[];
 
+  @OneToMany(() =>  HistoryAppointment, (historyAppointment) => historyAppointment.patient)
+  historyAppointment: HistoryAppointment[];
 }

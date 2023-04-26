@@ -36,6 +36,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { Queue } from './queue/entities/queue.entity';
 import { ClinicServicesModule } from './clinic-services/clinic-services.module';
+import { HistoryAppointmentModule } from './history_appointment/history_appointment.module';
+import { HistoryAppointment } from './history_appointment/entities/history_appointment.entity';
 
 @Module({
   imports: [
@@ -66,6 +68,7 @@ import { ClinicServicesModule } from './clinic-services/clinic-services.module';
         User,
         Patient,
         Queue,
+        HistoryAppointment,
       ],
       synchronize: true,
     }),
@@ -82,6 +85,7 @@ import { ClinicServicesModule } from './clinic-services/clinic-services.module';
     PatientModule,
     DentistWorkModule,
     ClinicServicesModule,
+    HistoryAppointmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

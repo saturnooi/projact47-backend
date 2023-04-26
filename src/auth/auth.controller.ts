@@ -26,6 +26,7 @@ export class AuthController {
   async dentistLogin(
     @Body() dentist: Login,
   ): Promise<{ access_token: string }> {
+    console.log(dentist);
     return await this.authService.loginDentist(dentist);
   }
 }
